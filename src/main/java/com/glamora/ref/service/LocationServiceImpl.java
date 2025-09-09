@@ -119,26 +119,19 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public LocationResponseDTO getLocationFromCoordinates(LocationRequestDTO coordinates) {
+
         String url = AppConstants.NOMINATIM_URL + "/reverse?format=json&lat="
                 + coordinates.getLatitude() + "&lon="
                 + coordinates.getLongitude() + "&addressdetails=1";
 
         RestTemplate restTemplate = new RestTemplate();
+
         String response = restTemplate.getForObject(url, String.class);
 
         JSONObject json = new JSONObject(response);
-        JSONObject address = json.getJSONObject("address");
 
-        return LocationResponseDTO.builder()
-                .displayTitle(json.optString("display_name"))
-                .countryName(address.optString("country"))
-                .stateName(address.optString("state"))
-                .districtName(address.optString("county"))
-                .cityName(address.optString("city", address.optString("town", address.optString("village", ""))))
-                .placeId(address.optString("postcode"))
-                .latitude(json.optDouble("lat"))
-                .longitude(json.optDouble("lon"))
-                .build();
+        return mapToLocationResponse(json);
+
     }
 
     @Override
@@ -159,19 +152,24 @@ public class LocationServiceImpl implements LocationService {
 
         JSONObject json = jsonArray.getJSONObject(0);
 
-        JSONObject addressObj = json.getJSONObject("address");
+        return mapToLocationResponse(json);
+
+    }
+
+    private LocationResponseDTO mapToLocationResponse(JSONObject json) {
+        JSONObject address = json.getJSONObject(AppConstants.ADDRESS);
 
         return LocationResponseDTO.builder()
-                .districtName(json.optString("display_name"))
-                .cityName(addressObj.optString("country"))
-                .stateName(addressObj.optString("state"))
-                .districtName(addressObj.optString("county"))
-                .cityName(addressObj.optString("city",
-                        addressObj.optString("town",
-                                addressObj.optString("village", ""))))
-                .placeId(addressObj.optString("postcode"))
-                .latitude(json.optDouble("lat"))
-                .longitude(json.optDouble("lon"))
+                .displayTitle(json.optString(AppConstants.DISPLAY_NAME))
+                .countryName(address.optString(AppConstants.COUNTRY))
+                .stateName(address.optString(AppConstants.STATE))
+                .districtName(address.optString(AppConstants.COUNTY))
+                .cityName(address.optString(AppConstants.CITY,
+                        address.optString(AppConstants.TOWN,
+                                address.optString(AppConstants.VILLAGE, ""))))
+                .placeId(address.optString(AppConstants.POSTCODE))
+                .latitude(address.optDouble(AppConstants.LAT))
+                .longitude(json.optDouble(AppConstants.LON))
                 .build();
     }
 
