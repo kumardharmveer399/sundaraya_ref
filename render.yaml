@@ -1,7 +1,6 @@
 services:
   - type: web
     name: sundaraya-api
-    runtime: java
     plan: free
     region: singapore
     branch: main
@@ -11,17 +10,16 @@ services:
 
     envVars:
       - key: PORT
-        value: 8080   # Render will override this, but good to set default
+        value: 8080   # Render overrides this with actual port
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://16.170.223.180:3306/new_demo?allowPublicKeyRetrieval=true&autoReconnect=true&useUnicode=true&allowMultiQueries=true&useSSL=false
+        value: jdbc:mysql://16.170.223.180:3306/new_dem
       - key: SPRING_DATASOURCE_USERNAME
         value: dbuser
       - key: SPRING_DATASOURCE_PASSWORD
-        value: root@123
+        sync: false   # secret → set manually in Render dashboard
       - key: JWT_SECRET
-        value: +H/oQqesV8NgkGHLAUfcFMR+7QL4dDPxjOsVFlMOe1o0JGDpisA5899sdcggUtt97sdcGC28KESAfT83BKAac/a25uyw==
-        sync: false
+        sync: false   # secret
       - key: JWT_EXPIRATION
         value: 86400000
       - key: GOOGLE_MAPS_API_KEY
-        sync: false
+        sync: false   # secret
