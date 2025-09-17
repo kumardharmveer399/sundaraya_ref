@@ -1,22 +1,21 @@
 services:
   - type: web
     name: sundaraya-api
+    runtime: native   # Add runtime (native works for JVM apps)
     plan: free
     region: singapore
     branch: main
-
-    buildCommand: ./mvnw clean package
+    buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/sundaraya_ref-0.0.1-SNAPSHOT.jar
-
     envVars:
       - key: PORT
-        value: 8080   # Render overrides this with actual port
+        value: 8080   # Render overrides this
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://16.170.223.180:3306/new_dem
+        value: jdbc:mysql://16.170.223.180:3306/new_demo?allowPublicKeyRetrieval=true&autoReconnect=true&useUnicode=true&allowMultiQueries=true&useSSL=false
       - key: SPRING_DATASOURCE_USERNAME
         value: dbuser
       - key: SPRING_DATASOURCE_PASSWORD
-        sync: false   # secret → set manually in Render dashboard
+        sync: false   # secret → set in dashboard
       - key: JWT_SECRET
         sync: false   # secret
       - key: JWT_EXPIRATION
